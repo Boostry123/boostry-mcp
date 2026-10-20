@@ -1,0 +1,12 @@
+{
+	"mcpServers": {
+		"boostries-mcp": {
+			"type": "stdio",
+			"command": "npm",
+			"args": [
+				"run",
+				"server:start"
+			]
+		}
+	}
+}

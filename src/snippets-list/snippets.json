@@ -1,0 +1,9 @@
+{
+  "Buttons": {
+    "simple-button": {
+      "category": "Buttons",
+      "description": "This is a simple and light weight button with only onClick functionality",
+      "path": "F:/coding/web-dev/boostry-mcp/components/buttons/simple-button.tsx"
+    }
+  }
+}

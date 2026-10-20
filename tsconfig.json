@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    /* --- Runtime & Environment --- */
+    "target": "ES2025",                         /* Target modern JavaScript features native to modern Node.js */
+    "lib": ["ES2025", "ESNext.Temporal"],       /* Use modern libraries, including the native Temporal API */
+    "types": ["node"],                          /* TypeScript 6.0+ defaults to [] for massive build speedups; explicitly pull Node types */
+
+    /* --- Module Resolution --- */
+    "module": "NodeNext",                       /* Essential for modern Node.js. Handles ESM/CJS interop correctly */
+    "moduleResolution": "NodeNext",             /* Resolves imports using Node's native module rules (looks at package.json exports) */
+    "resolveJsonModule": true,                  /* Allows importing .json files directly with standard import attributes */
+
+    /* --- Directories --- */
+    "rootDir": "./src",                         /* Where your TypeScript source files live */
+    "outDir": "./dist",                         /* Where compiled JavaScript code will be placed */
+    "removeComments": true,                     /* Reduces the final bundle footprint */
+
+    /* --- Strict Type-Checking (The Gold Standard) --- */
+    "strict": true,                             /* Enables all strict type-checking flags */
+    "noUncheckedIndexedAccess": true,           /* Enforces checking for undefined when accessing objects/arrays via string/numeric index */
+    "exactOptionalPropertyTypes": true,         /* Ensures optional fields cannot be explicitly assigned 'undefined' */
+    
+    /* --- Linter & Code Quality --- */
+    "noUnusedLocals": true,                     /* Errors out if there are unused variables */
+    "noUnusedParameters": true,                 /* Errors out if function parameters go unused */
+    "noImplicitReturns": true,                  /* Guarantees all code paths in a function return a value */
+    "noFallthroughCasesInSwitch": true,          /* Keeps switch-case blocks safe from accidental fallthroughs */
+    "noUncheckedSideEffectImports": true,       /* Catches typos when importing modules solely for side-effects */
+
+    /* --- Tooling Interop --- */
+    "esModuleInterop": true,                    /* Ensures smooth imports from legacy CommonJS libraries */
+    "forceConsistentCasingInFileNames": true,   /* Prevents cross-platform file system casing discrepancies */
+    "skipLibCheck": true                        /* Skip type-checking declaration files (.d.ts) inside node_modules for ultra-fast builds */
+  },
+  "include": ["src/**/*.ts"],                   /* Only track files in your source directory */
+  "exclude": ["node_modules", "dist"],          /* Ignore dependencies and output directory during compilation */
+}

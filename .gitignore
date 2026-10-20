@@ -1,0 +1,18 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Output directory (Build artifacts)
+dist/
+build/
+out/
+
+# Local env variables (Crucial for security!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
