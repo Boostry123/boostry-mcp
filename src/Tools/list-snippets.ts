@@ -1,13 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-
 //types
 import { z } from "zod";
-import { SnippetType } from "../types/snippet-type.js";
 //snippets
-import snippetsJson from "../snippets-list/snippets.json" with { type: "json" };
+import { FetchSnippetsList } from "../helpers/fileFetch.js";
 
-const snippets = snippetsJson as Record<string, Record<string, SnippetType>>;
-
+const snippets = await FetchSnippetsList("snippets.json");
 export default function listSnippets(server: McpServer) {
   server.registerTool(
     "list-snippets",

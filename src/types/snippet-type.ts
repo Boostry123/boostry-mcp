@@ -5,5 +5,7 @@ export const Snippet = z.object({
   description: z.string(),
   path: z.string(),
 });
+export const SnippetList = z.record(z.string(), z.record(z.string(), Snippet));
 
 export type SnippetType = z.infer<typeof Snippet>;
+export type SnippetListType = z.infer<typeof SnippetList>;

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "server:dev": "tsx src/server.ts",
     "server:build": "tsc",
@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
+    "dotenv": "^18.0.8",
     "zod": "^4.6.7"
   }
 }
