@@ -3,7 +3,11 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 //types
 import { z } from "zod";
 //helpers
-import { FileFetchRawText } from "../helpers/fileFetch.js";
+import { FetchSnippet } from "../helpers/fileFetch.js";
+
+async function handleFileFetch(path: string): Promise<string> {
+  return await FetchSnippet(path);
+}
 
 export default function fetchSnippet(server: McpServer) {
   server.registerTool(
@@ -19,17 +23,21 @@ export default function fetchSnippet(server: McpServer) {
       },
     },
     async (params) => {
-      const path = params.path;
-      if (!params.path)
+      const path = params.path.trim();
+      if (!params.path || path === "")
         return {
           isError: true,
-          content: [{ type: "text", text: "Path was not provided." }],
+          content: [
+            {
+              type: "text",
+              text: "Path was not provided. Reffer to the Snippets list.",
+            },
+          ],
         };
       const snippet = await handleFileFetch(path);
-      return { content: [{ type: "text", text: snippet }] };
+      return {
+        content: [{ type: "text", text: JSON.stringify(snippet, null, 2) }],
+      };
     },
   );
 }
-const handleFileFetch = (path: string) => {
-  return FileFetchRawText(path);
-};

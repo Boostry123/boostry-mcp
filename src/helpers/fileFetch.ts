@@ -18,7 +18,7 @@ export async function FileFetchRawText(path: string): Promise<string> {
 }
 
 /*
-Helper function that will use the base url from the .env and add the path provided to fetch a raw text file
+Helper function that will use the base url from the .env and add the path provided to fetch the snippets list as raw json file
 
 */
 export async function FetchSnippetsList(
@@ -34,4 +34,21 @@ export async function FetchSnippetsList(
     );
   }
   return SnippetList.parse(snippetsList);
+}
+
+/*
+Helper function that will use the base url from the .env and add the path provided to fetch the snippet as a raw text file
+
+*/
+export async function FetchSnippet(path: string): Promise<string> {
+  const url = new URL(path, SNIPPETS_BASE_URL).toString();
+
+  const response = await fetch(url);
+  const snippet = await response.text();
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch file from ${url} (status: ${response.status})`,
+    );
+  }
+  return snippet;
 }
