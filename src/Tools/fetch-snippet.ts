@@ -1,4 +1,4 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 //types
 import { z } from "zod";
@@ -14,30 +14,33 @@ export default function fetchSnippet(server: McpServer) {
     "fetch-snippet",
     {
       title: "Fetch Snippet",
-      description: "Fetch a snippet of code by a given path",
-      inputSchema: z.object({ path: z.string() }),
+      description:
+        "Fetch a snippet of code by a given path, use the list-snippets for full content table with paths",
+      inputSchema: { path: z.string().trim().min(1) },
       annotations: {
-        title: "List snippets",
+        title: "Fetch Snippet",
         readOnlyHint: true,
         destructiveHint: false,
       },
     },
     async (params) => {
-      const path = params.path.trim();
-      if (!params.path || path === "")
+      const path = params.path;
+      let snippet = "";
+      try {
+        snippet = await handleFileFetch(path);
+        return { content: [{ type: "text", text: snippet }] };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
         return {
           isError: true,
           content: [
             {
               type: "text",
-              text: "Path was not provided. Reffer to the Snippets list.",
+              text: `Couldn't fetch a snippet from "${path}": ${message}. Use a path from list-snippets.`,
             },
           ],
         };
-      const snippet = await handleFileFetch(path);
-      return {
-        content: [{ type: "text", text: JSON.stringify(snippet, null, 2) }],
-      };
+      }
     },
   );
 }

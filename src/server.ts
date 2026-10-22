@@ -1,3 +1,4 @@
+import "./config.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import registerAllTools from "./Tools/register-all-tools.js";
@@ -15,7 +16,7 @@ registerAllTools(server);
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.log("Boostry-MCP server started!");
+  console.error("Boostry-MCP server started!");
 }
 
 main().catch((error) => {

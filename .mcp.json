@@ -2,10 +2,9 @@
 	"mcpServers": {
 		"boostries-mcp": {
 			"type": "stdio",
-			"command": "npm",
+			"command": "node",
 			"args": [
-				"run",
-				"server:start"
+				"dist/server.js"
 			]
 		}
 	}
