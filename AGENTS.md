@@ -6,12 +6,13 @@ Guidance for AI coding agents working in this repository.
 
 **Boostry-MCP** is a [Model Context Protocol](https://modelcontextprotocol.io) server that lets agents fetch **ready-made, vetted code snippets** instead of guessing or writing their own from scratch. An agent first lists the available snippets (optionally by category), then fetches the source of the one it needs and reuses it.
 
-The snippets themselves do **not** live in this repo. They live in a separate Git repository and are fetched over HTTP at runtime:
+No snippets live in this repo. Both the snippets index and the snippet files live in a separate Git repository and are fetched over HTTP at runtime. Every location is configurable, so **don't hardcode any of them** in code or docs:
 
-- Snippets repo: `https://github.com/Boostry123/boostry-snippets`
-- Base URL (raw content): `https://raw.githubusercontent.com/Boostry123/boostry-snippets/main/`
-- Index file: `snippets.json` at the root of that repo
-- Currently the only snippet is `components/buttons/simple-button.tsx` (category `Buttons`, key `simple-button`)
+- **Where the repo is** comes from `SNIPPETS_BASE_URL` (raw-content URL of the repo root).
+- **Where the index is** comes from `SNIPPETS_LIST_PATH`, relative to the base URL.
+- **Where each snippet is** comes from its `path` in the index, relative to the base URL. Snippet files can sit anywhere in the repo, and their paths can change at any time; the index is the only source of truth.
+
+The default setup (`.env.example`) points at [`Boostry123/boostry-snippets`](https://github.com/Boostry123/boostry-snippets) with the index at `snippets.json` in the repo root. To see which snippets exist, call `list-snippets` (or read the index) instead of relying on a list written here. See the snippets repo's own `AGENTS.md` for its layout and how to add snippets.
 
 ## Tech stack
 
@@ -49,9 +50,9 @@ dist/                        # tsc output (gitignored); what .mcp.json actually 
 
 Intended agent flow: `list-snippets` → pick an entry → `fetch-snippet` with its `path`.
 
-## Snippets index format (`snippets.json` in the snippets repo)
+## Snippets index format
 
-Validated by `SnippetList` in `src/types/snippet-type.ts`: a record of category → record of snippet key → snippet.
+The index is the file at `SNIPPETS_LIST_PATH` (default `snippets.json`) in the snippets repo. It's validated by `SnippetList` in `src/types/snippet-type.ts`: a record of category → record of snippet key → snippet. Example entry (the `path` is illustrative; real paths are whatever the index says):
 
 ```json
 {
@@ -59,7 +60,7 @@ Validated by `SnippetList` in `src/types/snippet-type.ts`: a record of category 
     "simple-button": {
       "category": "Buttons",
       "description": "This is a simple and light weight button with only onClick functionality",
-      "path": "./components/buttons/simple-button.tsx"
+      "path": "snippets/react/components/buttons/simple-button.tsx"
     }
   }
 }
@@ -67,7 +68,7 @@ Validated by `SnippetList` in `src/types/snippet-type.ts`: a record of category 
 
 `path` is relative to the snippets repo root and is resolved with `new URL(path, SNIPPETS_BASE_URL)`. `config.ts` appends a trailing `/` to `SNIPPETS_BASE_URL` if it's missing (without it, `main` would be dropped from the resolved URL).
 
-**Adding a snippet** is done in the snippets repo, not here: commit the file and add an entry to `snippets.json`. No change or restart of this server is needed — the index is fetched per call.
+**Adding, moving or renaming a snippet** is done in the snippets repo, not here: commit the file and add or update its entry in the index. No change or restart of this server is needed — the index is fetched per call. Moving the index itself, or switching to another snippets repo or branch, only needs a `.env` change and a server restart (no code change).
 
 If an entry doesn't match the schema, `SnippetList.parse` throws a `ZodError`, which `list-snippets` returns as `isError`.
 
@@ -140,5 +141,6 @@ Error handling is intentionally basic for now; more robust handling is planned. 
 2. ~~Snippets index served from the Git repo~~
 3. ~~Fetch snippet content from the Git repo by path~~
 4. ~~Validated config + basic exception handling in tools~~
-5. Move all remaining snippets into the snippets repo and grow the catalog.
-6. More robust exception handling (path restriction, timeouts, etc.).
+5. ~~Move all snippets into the snippets repo~~
+6. Grow the snippets catalog.
+7. More robust exception handling (path restriction, timeouts, etc.).

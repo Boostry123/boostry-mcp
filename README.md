@@ -2,7 +2,7 @@
 
 An [MCP](https://modelcontextprotocol.io) server that gives AI agents ready-made code snippets, so they reuse vetted code instead of guessing or writing their own.
 
-Snippets are served from a separate Git repo: [Boostry123/boostry-snippets](https://github.com/Boostry123/boostry-snippets).
+No snippets are bundled with the server. Both the snippets index and the snippet files are fetched at runtime from a separate Git repo, by default [Boostry123/boostry-snippets](https://github.com/Boostry123/boostry-snippets). The repo, the index location and every snippet path are configurable (see [Using your own snippets repo](#using-your-own-snippets-repo)).
 
 ## Tools
 
@@ -33,7 +33,13 @@ SNIPPETS_LIST_PATH="snippets.json"
 
 ### Using your own snippets repo
 
-`SNIPPETS_BASE_URL` can point to any snippets repo you like (the raw-content URL of its root). The only requirement is a `snippets.json` table of contents at that root (or wherever `SNIPPETS_LIST_PATH` points). The snippet files themselves can live at any path, as long as each one is listed in `snippets.json` (see [Adding snippets](#adding-snippets)).
+Nothing about the snippet locations is hardcoded:
+
+- `SNIPPETS_BASE_URL` can point to any repo or branch (the raw-content URL of its root).
+- `SNIPPETS_LIST_PATH` sets where the index lives in that repo (default `snippets.json` at the root).
+- Snippet files can live at any path. Each one's location comes from its `path` in the index, so files can be moved or renamed as long as the index is updated.
+
+The index is fetched on every `list-snippets` call, so changes in the snippets repo show up without restarting the server. Changes to `.env` need a restart.
 
 ## Use with an MCP client
 
@@ -62,7 +68,7 @@ Add to your client's MCP config (e.g. `.mcp.json` for Claude Code):
 
 ## Adding snippets
 
-Add the file anywhere in the snippets repo and register it in the root `snippets.json`. `path` is relative to the repo root:
+Add the file anywhere in the snippets repo and register it in the index (`SNIPPETS_LIST_PATH`, default `snippets.json`). `path` is relative to the repo root (`SNIPPETS_BASE_URL`), not to the index file. Example entry:
 
 ```json
 {
@@ -70,7 +76,7 @@ Add the file anywhere in the snippets repo and register it in the root `snippets
     "simple-button": {
       "category": "Buttons",
       "description": "Simple, lightweight button with onClick only",
-      "path": "./components/buttons/simple-button.tsx"
+      "path": "snippets/react/components/buttons/simple-button.tsx"
     }
   }
 }
