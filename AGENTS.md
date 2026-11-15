@@ -36,8 +36,7 @@ src/
     fileFetch.ts             # HTTP fetch helpers built on config.SNIPPETS_BASE_URL
   types/
     snippet-type.ts          # zod schemas + inferred types for the snippets index
-dist/                        # tsc output (gitignored); what .mcp.json actually runs
-.mcp.json                    # Registers the server as "boostries-mcp" (runs `node dist/server.js`)
+dist/                        # tsc output (gitignored); what MCP clients actually run
 .env / .env.example          # SNIPPETS_BASE_URL, SNIPPETS_LIST_PATH
 ```
 
@@ -82,8 +81,9 @@ npm run server:start     # node dist/server.js
 npm run server:inspect   # MCP Inspector against server:dev
 ```
 
-- `.mcp.json` runs the **built** output, so run `npm run server:build` after changing `src/` before the change is visible to MCP clients (Claude Code etc.).
-- `.mcp.json` calls `node` directly (not `npm run`) because npm prints its script banner to stdout, which corrupts the protocol stream.
+- The server is registered at **user scope** in Claude Code as `boostry-code-snippets` (`claude mcp add boostry-code-snippets -s user -- node <absolute-path>/dist/server.js`), so it's available in every project. There is no project-level `.mcp.json`; don't add one, or the server is registered twice.
+- MCP clients run the **built** output, so run `npm run server:build` after changing `src/` before the change is visible to them.
+- The registration calls `node` directly (not `npm run`) because npm prints its script banner to stdout, which corrupts the protocol stream.
 - `server:inspect` uses `set VAR=...`, which is Windows `cmd` syntax; it won't set the variable on POSIX shells.
 - There are no tests or linter configured; `npm run server:build` (strict tsc) is the correctness check.
 
@@ -124,7 +124,7 @@ Never commit `.env`.
 
 - **stdout is the protocol channel.** With the stdio transport, anything written to stdout corrupts MCP messages. Log with `console.error`, never `console.log`.
 - **ESM import order:** all `import`s are evaluated before a module's body runs. Anything that must happen first (like loading `.env`) has to live in its own module imported first — see `config.ts`.
-- `.mcp.json` uses the relative path `dist/server.js`, so the client must launch the server from the repo root (fine for a project-scoped server in Claude Code).
+- The registration must use an **absolute** path to `dist/server.js`; a relative path only works when the client is launched from the repo root.
 - `FileFetchRawText` in `helpers/fileFetch.ts` reads local files and is currently unused. It is **kept on purpose** for possible future use — don't remove it.
 
 ## Known limitations (deliberately deferred)

@@ -43,19 +43,13 @@ The index is fetched on every `list-snippets` call, so changes in the snippets r
 
 ## Use with an MCP client
 
-Add to your client's MCP config (e.g. `.mcp.json` for Claude Code):
+Build the server (`npm run server:build`), then register it once at user scope so it works from any folder. Use the absolute path to `dist/server.js`:
 
-```json
-{
-  "mcpServers": {
-    "boostries-mcp": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["dist/server.js"]
-    }
-  }
-}
+```bash
+claude mcp add boostry-code-snippets -s user -- node <absolute-path-to-repo>/dist/server.js
 ```
+
+Check it with `claude mcp list`. Other MCP clients need the same `node <absolute-path>/dist/server.js` command in their config.
 
 ## Scripts
 
