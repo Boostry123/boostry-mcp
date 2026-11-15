@@ -41,15 +41,56 @@ Nothing about the snippet locations is hardcoded:
 
 The index is fetched on every `list-snippets` call, so changes in the snippets repo show up without restarting the server. Changes to `.env` need a restart.
 
-## Use with an MCP client
+## Install in your agent
 
-Build the server (`npm run server:build`), then register it once at user scope so it works from any folder. Use the absolute path to `dist/server.js`:
+The server works with any MCP client (agent). Every client starts it the same way, as a local **stdio** server:
+
+- **command:** `node`
+- **args:** the **absolute** path to `dist/server.js` in this repo
+
+**Before you start:** do the [Setup](#setup) steps above. `dist/server.js` only exists after `npm run server:build`, and the server exits on start if `.env` is missing or invalid.
+
+**Rules for every client:**
+
+- Use an absolute path. A relative path only works when the agent happens to start in this repo's folder.
+- On Windows, write the path with forward slashes (`F:/code/boostry-mcp/dist/server.js`) or doubled backslashes (`F:\\code\\...`) in JSON.
+- Use `node` directly, not `npm run server:start`. npm prints a banner to stdout, which breaks the MCP connection.
+- After you change `src/`, run `npm run server:build` again and restart the agent.
+
+### Claude Code
+
+Register it once for all your projects:
 
 ```bash
 claude mcp add boostry-code-snippets -s user -- node <absolute-path-to-repo>/dist/server.js
 ```
 
-Check it with `claude mcp list`. Other MCP clients need the same `node <absolute-path>/dist/server.js` command in their config.
+Check it with `claude mcp list`.
+
+### Any other agent (Claude Desktop, Cursor, VS Code, ...)
+
+Most clients use a JSON config with an `mcpServers` object. Add this entry:
+
+```json
+{
+  "mcpServers": {
+    "boostry-code-snippets": {
+      "command": "node",
+      "args": ["<absolute-path-to-repo>/dist/server.js"]
+    }
+  }
+}
+```
+
+Where the config lives and what the top-level key is called differ by client:
+
+| Client         | Config                                                                         | Notes                                                      |
+| -------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| Claude Desktop | `claude_desktop_config.json` (Settings → Developer → Edit Config)              | Restart the app after saving.                              |
+| Cursor         | `~/.cursor/mcp.json` (all projects) or `.cursor/mcp.json` (one project)        |                                                            |
+| VS Code        | `.vscode/mcp.json`, or the **MCP: Add Server** command                         | Uses `"servers"` instead of `"mcpServers"`; add `"type": "stdio"`. |
+
+For a client not listed here, look up "MCP server config" in its docs and give it the same `command` and `args`. To check it worked, ask the agent to call `list-snippets`.
 
 ## Scripts
 

@@ -81,7 +81,7 @@ npm run server:start     # node dist/server.js
 npm run server:inspect   # MCP Inspector against server:dev
 ```
 
-- The server is registered at **user scope** in Claude Code as `boostry-code-snippets` (`claude mcp add boostry-code-snippets -s user -- node <absolute-path>/dist/server.js`), so it's available in every project. There is no project-level `.mcp.json`; don't add one, or the server is registered twice.
+- The server is registered at **user scope** in Claude Code as `boostry-code-snippets` (`claude mcp add boostry-code-snippets -s user -- node <absolute-path>/dist/server.js`), so it's available in every project. There is no project-level `.mcp.json`; don't add one, or the server is registered twice. Install steps for other MCP clients are in the README's "Install in your agent" section; keep them client-agnostic.
 - MCP clients run the **built** output, so run `npm run server:build` after changing `src/` before the change is visible to them.
 - The registration calls `node` directly (not `npm run`) because npm prints its script banner to stdout, which corrupts the protocol stream.
 - `server:inspect` uses `set VAR=...`, which is Windows `cmd` syntax; it won't set the variable on POSIX shells.
